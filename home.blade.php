@@ -47,6 +47,16 @@
         .product-card:hover{transform:translateY(-8px);box-shadow:0 25px 60px rgba(0,0,0,.1);border-color:#d1fae5}
         .product-card:hover .product-img{transform:scale(1.05)}
         .product-img{transition:transform .6s cubic-bezier(.16,1,.3,1)}
+        .product-img{transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.content-text.expanded{
+    display:block;
+    -webkit-line-clamp:unset;
+    overflow:hidden auto;
+    max-height:150px;
+    padding-left:4px;
+}
+.content-text.expanded::-webkit-scrollbar{width:4px}
+.content-text.expanded::-webkit-scrollbar-thumb{background:#10b981;border-radius:2px}
         .service-card{border-radius:24px;padding:36px;background:#fff;border:1px solid #e2e8f0;transition:all .4s cubic-bezier(.16,1,.3,1);position:relative;overflow:hidden}
         .service-card::before{content:'';position:absolute;top:0;right:0;width:100px;height:100px;background:linear-gradient(135deg,rgba(16,185,129,.1),transparent);border-radius:0 0 0 100px;transition:all .4s}
         .service-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(0,0,0,.08);border-color:#d1fae5}
@@ -268,65 +278,33 @@
             </a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="fade-up product-card">
-                <div class="relative overflow-hidden h-56 bg-gradient-to-br from-brand-100 to-brand-50">
-                    <img src="{{ asset('images/drip.jpg') }}" alt="{{ __('home.tabs.products.items.1.title') }}" class="product-img w-full h-full object-cover">
-                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md rounded-xl px-4 py-1.5 text-sm font-bold text-brand-700 shadow-lg">{{ __('home.landing.product_badges.1') }}</div>
+            @foreach($products as $idx => $product)
+            <div class="fade-up product-card" style="transition-delay:{{ $idx * 0.1 }}s">
+                <div class="relative overflow-hidden h-56 bg-gradient-to-br from-{{ $product->color }}-100 to-{{ $product->color }}-50">
+                    @if($product->image_path)
+                    <img src="{{ asset($product->image_path) }}" alt="{{ app()->getLocale() === 'ar' ? $product->title_ar : $product->title_en }}" class="product-img w-full h-full object-cover">
+                    @endif
+                    @php $badge = app()->getLocale() === 'ar' ? $product->badge_ar : $product->badge_en; @endphp
+                    @if($badge)
+                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md rounded-xl px-4 py-1.5 text-sm font-bold text-{{ $product->color }}-700 shadow-lg">{{ $badge }}</div>
+                    @endif
                 </div>
                 <div class="p-7">
                     <div class="flex items-center gap-2 mb-3">
-                        <span class="w-8 h-8 bg-brand-50 rounded-lg flex items-center justify-center text-lg">💧</span>
-                        <h3 class="text-xl font-bold text-gray-900">{{ __('home.tabs.products.items.1.title') }}</h3>
+                        <span class="w-8 h-8 bg-{{ $product->color }}-50 rounded-lg flex items-center justify-center text-lg">{{ $product->icon }}</span>
+                        <h3 class="text-xl font-bold text-gray-900">{{ app()->getLocale() === 'ar' ? $product->title_ar : $product->title_en }}</h3>
                     </div>
-                    <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ __('home.landing_products.items.1.description') }}</p>
+                    <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ app()->getLocale() === 'ar' ? $product->description_ar : $product->description_en }}</p>
                     <div class="flex items-center justify-between">
                         <div>
-                            <span class="text-2xl font-black text-brand-600">2,500</span>
+                            <span class="text-2xl font-black text-{{ $product->color }}-600">{{ number_format($product->price, 0) }}</span>
                             <span class="text-sm text-gray-400 mr-1">{{ __('home.landing.currency') }}</span>
                         </div>
-                        <a href="#consultations" class="px-5 py-2.5 rounded-xl bg-brand-50 text-brand-700 font-bold text-sm hover:bg-brand-100 transition">{{ __('home.landing.order_now') }}</a>
+                        <a href="{{ route('order.now', $langParam) }}" class="px-5 py-2.5 rounded-xl bg-{{ $product->color }}-50 text-{{ $product->color }}-700 font-bold text-sm hover:bg-{{ $product->color }}-100 transition">{{ __('home.landing.order_now') }}</a>
                     </div>
                 </div>
             </div>
-            <div class="fade-up product-card" style="transition-delay:.1s">
-                <div class="relative overflow-hidden h-56 bg-gradient-to-br from-ocean-100 to-ocean-50">
-                    <img src="{{ asset('images/farm1.jpg') }}" alt="{{ __('home.tabs.products.items.2.title') }}" class="product-img w-full h-full object-cover">
-                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md rounded-xl px-4 py-1.5 text-sm font-bold text-ocean-600 shadow-lg">{{ __('home.landing.product_badges.2') }}</div>
-                </div>
-                <div class="p-7">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="w-8 h-8 bg-ocean-50 rounded-lg flex items-center justify-center text-lg">📱</span>
-                        <h3 class="text-xl font-bold text-gray-900">{{ __('home.tabs.products.items.2.title') }}</h3>
-                    </div>
-                    <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ __('home.landing_products.items.2.description') }}</p>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <span class="text-2xl font-black text-ocean-600">1,800</span>
-                            <span class="text-sm text-gray-400 mr-1">{{ __('home.landing.currency') }}</span>
-                        </div>
-                        <a href="#consultations" class="px-5 py-2.5 rounded-xl bg-ocean-50 text-ocean-600 font-bold text-sm hover:bg-ocean-100 transition">{{ __('home.landing.order_now') }}</a>
-                    </div>
-                </div>
-            </div>
-            <div class="fade-up product-card" style="transition-delay:.2s">
-                <div class="relative overflow-hidden h-56 bg-gradient-to-br from-amber-100 to-amber-50">
-                    <img src="{{ asset('images/stats.png') }}" alt="{{ __('home.tabs.products.items.3.title') }}" class="product-img w-full h-full object-cover">
-                </div>
-                <div class="p-7">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="w-8 h-8 bg-amber-50 rounded-lg flex items-center justify-center text-lg">🌱</span>
-                        <h3 class="text-xl font-bold text-gray-900">{{ __('home.tabs.products.items.3.title') }}</h3>
-                    </div>
-                    <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ __('home.landing_products.items.3.description') }}</p>
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <span class="text-2xl font-black text-amber-600">350</span>
-                            <span class="text-sm text-gray-400 mr-1">{{ __('home.landing.currency') }}</span>
-                        </div>
-                        <a href="#consultations" class="px-5 py-2.5 rounded-xl bg-amber-50 text-amber-700 font-bold text-sm hover:bg-amber-100 transition">{{ __('home.landing.order_now') }}</a>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
@@ -340,48 +318,25 @@
             <p class="fade-up text-gray-500 mt-4 text-lg" style="transition-delay:.2s">{{ __('home.landing_services.description') }}</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="fade-up service-card">
-                <div class="w-16 h-16 bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-lg shadow-brand-500/25">🏗️</div>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">{{ __('home.tabs.services.items.1.title') }}</h3>
-                <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ __('home.landing_services.items.1.description') }}</p>
+            @foreach($services as $idx => $service)
+            <div class="fade-up service-card" style="transition-delay:{{ $idx * 0.1 }}s">
+                <div class="w-16 h-16 bg-gradient-to-br from-{{ $service->color }}-500 to-{{ $service->color }}-700 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-lg shadow-{{ $service->color }}-500/25">{{ $service->icon }}</div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">{{ app()->getLocale() === 'ar' ? $service->title_ar : $service->title_en }}</h3>
+                <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ app()->getLocale() === 'ar' ? $service->description_ar : $service->description_en }}</p>
                 <ul class="space-y-3 mb-6">
-                    <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-brand-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>{{ __('home.tabs.services.items.1.points.1') }}</li>
-                    <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-brand-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>{{ __('home.tabs.services.items.1.points.2') }}</li>
-                    <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-brand-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>{{ __('home.tabs.services.items.1.points.3') }}</li>
+                    @php $points = app()->getLocale() === 'ar' ? ($service->points_ar ?? []) : ($service->points_en ?? []); @endphp
+                    @foreach($points as $point)
+                    <li class="flex items-center gap-3 text-sm text-gray-600">
+                        <svg class="w-5 h-5 text-{{ $service->color }}-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                        {{ $point }}
+                    </li>
+                    @endforeach
                 </ul>
-                <div class="flex items-center justify-between pt-5 border-t border-gray-100">
-                    <span class="text-sm text-gray-400">{{ __('home.landing.starts_from') }}</span>
-                    <span class="text-xl font-black text-brand-600">{{ __('home.tabs.services.items.1.price') }}</span>
+                <div class="pt-5 border-t border-gray-100">
+                    <span class="text-lg font-black text-{{ $service->color }}-600">{{ app()->getLocale() === 'ar' ? $service->price_ar : $service->price_en }}</span>
                 </div>
             </div>
-            <div class="fade-up service-card" style="transition-delay:.1s">
-                <div class="w-16 h-16 bg-gradient-to-br from-ocean-500 to-ocean-600 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-lg shadow-ocean-500/25">🔗</div>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">{{ __('home.tabs.services.items.2.title') }}</h3>
-                <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ __('home.landing_services.items.2.description') }}</p>
-                <ul class="space-y-3 mb-6">
-                    <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-ocean-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>{{ __('home.tabs.services.items.2.points.1') }}</li>
-                    <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-ocean-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>{{ __('home.tabs.services.items.2.points.2') }}</li>
-                    <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-ocean-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>{{ __('home.tabs.services.items.2.points.3') }}</li>
-                </ul>
-                <div class="flex items-center justify-between pt-5 border-t border-gray-100">
-                    <span class="text-sm text-gray-400">{{ __('home.landing.starts_from') }}</span>
-                    <span class="text-xl font-black text-ocean-600">{{ __('home.tabs.services.items.2.price') }}</span>
-                </div>
-            </div>
-            <div class="fade-up service-card" style="transition-delay:.2s">
-                <div class="w-16 h-16 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center text-3xl mb-6 shadow-lg shadow-amber-500/25">🛠️</div>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">{{ __('home.tabs.services.items.3.title') }}</h3>
-                <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ __('home.landing_services.items.3.description') }}</p>
-                <ul class="space-y-3 mb-6">
-                    <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>{{ __('home.tabs.services.items.3.points.1') }}</li>
-                    <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>{{ __('home.tabs.services.items.3.points.2') }}</li>
-                    <li class="flex items-center gap-3 text-sm text-gray-600"><svg class="w-5 h-5 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>{{ __('home.tabs.services.items.3.points.3') }}</li>
-                </ul>
-                <div class="flex items-center justify-between pt-5 border-t border-gray-100">
-                    <span class="text-sm text-gray-400">{{ __('home.landing.monthly_plans') }}</span>
-                    <span class="text-xl font-black text-amber-600">{{ __('home.landing.flexible') }}</span>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
@@ -410,16 +365,16 @@
                         {{ __('home.awareness_section.types.' . $item->type) }}
                     </div>
                 </div>
-                <div class="p-5">
-                    <h3 class="font-bold text-gray-900 mb-2 line-clamp-2">{{ $item->title }}</h3>
-                    @if($item->body)
-                    <p class="text-gray-500 text-sm leading-relaxed line-clamp-2">{{ \Illuminate\Support\Str::limit(strip_tags($item->body), 100) }}</p>
-                    @endif
-                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
-                        <span class="text-xs text-gray-400">{{ $item->created_at->format('Y-m-d') }}</span>
-                        <span class="text-brand-600 text-sm font-bold">{{ __('home.landing.read_more') }} ←</span>
-                    </div>
-                </div>
+                <div class="p-5 awareness-card-body">
+    <h3 class="font-bold text-gray-900 mb-2 line-clamp-2">{{ $item->title }}</h3>
+    @if($item->body)
+    <p class="content-text text-gray-500 text-sm leading-relaxed line-clamp-2" data-full="{{ strip_tags($item->body) }}">{{ \Illuminate\Support\Str::limit(strip_tags($item->body), 100) }}</p>
+    @endif
+    <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
+        <span class="text-xs text-gray-400">{{ $item->created_at->format('Y-m-d') }}</span>
+        <button type="button" onclick="expandContent(this)" class="read-more-btn text-brand-600 text-sm font-bold hover:text-brand-700 transition">{{ __('home.landing.read_more') }} ←</button>
+    </div>
+</div>
             </div>
             @endforeach
         </div>
@@ -436,66 +391,28 @@
             <p class="fade-up text-gray-500 mt-4 text-lg" style="transition-delay:.2s">{{ __('home.consultations.description') }}</p>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="fade-up consult-card">
+            @foreach($consultationPackages as $idx => $package)
+            <div class="fade-up consult-card {{ $package->featured ? 'featured' : '' }}" style="transition-delay:{{ $idx * 0.1 }}s">
                 <div class="p-8">
-                    <div class="w-14 h-14 bg-brand-50 rounded-2xl flex items-center justify-center text-2xl mb-5">📈</div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ __('home.tabs.consult.items.1.title') }}</h3>
-                    <p class="text-gray-500 text-sm mb-6">{{ __('home.tabs.consult.items.1.description') }}</p>
+                    <div class="w-14 h-14 bg-{{ $package->color }}-50 rounded-2xl flex items-center justify-center text-2xl mb-5">{{ $package->icon }}</div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ app()->getLocale() === 'ar' ? $package->title_ar : $package->title_en }}</h3>
+                    <p class="text-gray-500 text-sm mb-6">{{ app()->getLocale() === 'ar' ? $package->description_ar : $package->description_en }}</p>
                     <ul class="space-y-2.5 mb-8">
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-brand-500">✓</span> {{ __('home.tabs.consult.items.1.includes.1') }}</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-brand-500">✓</span> {{ __('home.tabs.consult.items.1.includes.2') }}</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-brand-500">✓</span> {{ __('home.tabs.consult.items.1.includes.3') }}</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-brand-500">✓</span> {{ __('home.tabs.consult.items.1.includes.4') }}</li>
+                        @php $includes = app()->getLocale() === 'ar' ? ($package->includes_ar ?? []) : ($package->includes_en ?? []); @endphp
+                        @foreach($includes as $item)
+                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-{{ $package->color }}-500">✓</span> {{ $item }}</li>
+                        @endforeach
                     </ul>
                 </div>
-                <div class="px-8 py-5 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                <div class="px-8 py-5 {{ $package->featured ? 'bg-'.$package->color.'-50 border-t border-'.$package->color.'-100' : 'bg-gray-50 border-t border-gray-100' }} flex items-center justify-between">
                     <div>
-                        <div class="text-xs text-gray-400">{{ __('home.landing.duration') }}: {{ __('home.tabs.consult.items.1.duration') }}</div>
-                        <div class="text-2xl font-black text-brand-600">{{ __('home.tabs.consult.items.1.price') }}</div>
+                        <div class="text-xs text-gray-400">{{ __('home.landing.duration') }}: {{ app()->getLocale() === 'ar' ? $package->duration_ar : $package->duration_en }}</div>
+                        <div class="text-2xl font-black text-{{ $package->color }}-600">{{ app()->getLocale() === 'ar' ? $package->price_ar : $package->price_en }}</div>
                     </div>
-                    <a href="{{ route('register', $langParam) }}" class="px-5 py-2.5 rounded-xl bg-brand-600 text-white font-bold text-sm hover:bg-brand-700 transition shadow-lg shadow-brand-600/25">{{ __('home.landing.book_now') }}</a>
+                    <a href="{{ route('book.consultation', $langParam) }}" class="px-5 py-2.5 rounded-xl bg-{{ $package->color }}-600 text-white font-bold text-sm hover:bg-{{ $package->color }}-700 transition shadow-lg shadow-{{ $package->color }}-600/25">{{ __('home.landing.book_now') }}</a>
                 </div>
             </div>
-            <div class="fade-up consult-card featured" style="transition-delay:.1s">
-                <div class="p-8">
-                    <div class="w-14 h-14 bg-ocean-50 rounded-2xl flex items-center justify-center text-2xl mb-5">🔧</div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ __('home.tabs.consult.items.2.title') }}</h3>
-                    <p class="text-gray-500 text-sm mb-6">{{ __('home.tabs.consult.items.2.description') }}</p>
-                    <ul class="space-y-2.5 mb-8">
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-ocean-500">✓</span> {{ __('home.tabs.consult.items.2.includes.1') }}</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-ocean-500">✓</span> {{ __('home.tabs.consult.items.2.includes.2') }}</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-ocean-500">✓</span> {{ __('home.tabs.consult.items.2.includes.3') }}</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-ocean-500">✓</span> {{ __('home.tabs.consult.items.2.includes.4') }}</li>
-                    </ul>
-                </div>
-                <div class="px-8 py-5 bg-brand-50 border-t border-brand-100 flex items-center justify-between">
-                    <div>
-                        <div class="text-xs text-gray-400">{{ __('home.landing.duration') }}: {{ __('home.tabs.consult.items.2.duration') }}</div>
-                        <div class="text-2xl font-black text-brand-600">{{ __('home.tabs.consult.items.2.price') }}</div>
-                    </div>
-                    <a href="{{ route('register', $langParam) }}" class="px-5 py-2.5 rounded-xl bg-brand-600 text-white font-bold text-sm hover:bg-brand-700 transition shadow-lg shadow-brand-600/25">{{ __('home.landing.book_now') }}</a>
-                </div>
-            </div>
-            <div class="fade-up consult-card" style="transition-delay:.2s">
-                <div class="p-8">
-                    <div class="w-14 h-14 bg-green-50 rounded-2xl flex items-center justify-center text-2xl mb-5">🌱</div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">{{ __('home.tabs.consult.items.3.title') }}</h3>
-                    <p class="text-gray-500 text-sm mb-6">{{ __('home.tabs.consult.items.3.description') }}</p>
-                    <ul class="space-y-2.5 mb-8">
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-green-500">✓</span> {{ __('home.tabs.consult.items.3.includes.1') }}</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-green-500">✓</span> {{ __('home.tabs.consult.items.3.includes.2') }}</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-green-500">✓</span> {{ __('home.tabs.consult.items.3.includes.3') }}</li>
-                        <li class="flex items-center gap-2 text-sm text-gray-600"><span class="text-green-500">✓</span> {{ __('home.tabs.consult.items.3.includes.4') }}</li>
-                    </ul>
-                </div>
-                <div class="px-8 py-5 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-                    <div>
-                        <div class="text-xs text-gray-400">{{ __('home.landing.duration') }}: {{ __('home.tabs.consult.items.3.duration') }}</div>
-                        <div class="text-2xl font-black text-brand-600">{{ __('home.tabs.consult.items.3.price') }}</div>
-                    </div>
-                    <a href="{{ route('register', $langParam) }}" class="px-5 py-2.5 rounded-xl bg-brand-600 text-white font-bold text-sm hover:bg-brand-700 transition shadow-lg shadow-brand-600/25">{{ __('home.landing.book_now') }}</a>
-                </div>
-            </div>
+            @endforeach
         </div>
     </div>
 </section>
@@ -634,6 +551,14 @@
          YouTube Channel
     </a>
 </li>
+<li class="flex items-center gap-3 text-gray-400 text-sm">
+    <svg class="w-4 h-4 text-blue-600 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+    </svg>
+    <a href="https://www.linkedin.com/company/soqia-ies/" target="_blank" class="hover:text-blue-300 transition">
+         LinkedIn 
+    </a>
+</li>
                     </li>
                 </ul>
             </div>
@@ -747,5 +672,15 @@ for (let i = 0; i < count; i++) {
     100% { transform: translateY(-100vh) rotate(360deg); opacity:0; }
 }
 </style>
+<script>
+function expandContent(btn) {
+    const card = btn.closest('.awareness-card-body');
+    const p = card.querySelector('.content-text');
+    p.textContent = p.dataset.full;
+    p.classList.remove('line-clamp-2');
+    p.classList.add('expanded');
+    btn.style.display = 'none';
+}
+</script>
 </body>
 </html>
